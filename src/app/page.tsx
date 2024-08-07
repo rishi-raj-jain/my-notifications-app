@@ -17,15 +17,14 @@ export default function () {
               .user('chris')
               .getOrCreate({
                 name: 'Chris',
-                occupation: 'Software Engineer',
               })
-              .then((res) => {
-                client
-                  .feed('user', res.id)
+              .then((chrisUser) => {
+                const chris = client.feed('user', chrisUser.id)
+                chris
                   .addActivity({
                     verb: 'tweet',
                     object: 'tweet:id',
-                    actor: `user:${res.id}`,
+                    actor: `user:${chrisUser.id}`,
                     message: "@jack check out getstream.io it's awesome!",
                     to: ['notification:jack'],
                   })
@@ -35,9 +34,14 @@ export default function () {
                       .then((res_) => {
                         if (process.env.NEXT_PUBLIC_STREAM_API_KEY) {
                           const client_ = connect(process.env.NEXT_PUBLIC_STREAM_API_KEY, res_.userToken, process.env.NEXT_PUBLIC_STREAM_APP_ID)
-                          const jack = client_.feed('timeline', 'jack')
-                          jack.follow('user', 'chris')
-                          jack.get({ limit: 10 })
+                          client_
+                            .user('jack')
+                            .getOrCreate({ name: 'Jack' })
+                            .then((jackUser) => {
+                              const jack = client_.feed('user', jackUser.id)
+                              jack.follow('user', `user:${chrisUser.id}`)
+                              jack.get({ limit: 10 })
+                            })
                         }
                       })
                   })
