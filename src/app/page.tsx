@@ -13,25 +13,33 @@ export default function () {
         if (res.userToken) {
           if (process.env.NEXT_PUBLIC_STREAM_API_KEY) {
             const client = connect(process.env.NEXT_PUBLIC_STREAM_API_KEY, res.userToken, process.env.NEXT_PUBLIC_STREAM_APP_ID)
-            const chris = client.feed('user', 'chris')
-            chris
-              .addActivity({
-                actor: 'chris',
-                verb: 'add',
-                object: 'picture:10',
-                foreign_id: 'picture:10',
-                message: 'Beautiful bird!',
+            client
+              .user('chris')
+              .getOrCreate({
+                name: 'Chris',
+                occupation: 'Software Engineer',
               })
-              .then(() => {
-                fetch('/api/token?name=jack')
-                  .then((res_) => res_.json())
-                  .then((res_) => {
-                    if (process.env.NEXT_PUBLIC_STREAM_API_KEY) {
-                      const client_ = connect(process.env.NEXT_PUBLIC_STREAM_API_KEY, res_.userToken, process.env.NEXT_PUBLIC_STREAM_APP_ID)
-                      const jack = client_.feed('timeline', 'jack')
-                      jack.follow('user', 'chris')
-                      jack.get({ limit: 10 })
-                    }
+              .then((res) => {
+                client
+                  .feed('user', res.id)
+                  .addActivity({
+                    verb: 'tweet',
+                    object: 'tweet:id',
+                    actor: `user:${res.id}`,
+                    message: "@jack check out getstream.io it's awesome!",
+                    to: ['notification:jack'],
+                  })
+                  .then(() => {
+                    fetch('/api/token?name=jack')
+                      .then((res_) => res_.json())
+                      .then((res_) => {
+                        if (process.env.NEXT_PUBLIC_STREAM_API_KEY) {
+                          const client_ = connect(process.env.NEXT_PUBLIC_STREAM_API_KEY, res_.userToken, process.env.NEXT_PUBLIC_STREAM_APP_ID)
+                          const jack = client_.feed('timeline', 'jack')
+                          jack.follow('user', 'chris')
+                          jack.get({ limit: 10 })
+                        }
+                      })
                   })
               })
           }
