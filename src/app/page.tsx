@@ -6,13 +6,16 @@ import { connect } from 'getstream'
 import { useEffect } from 'react'
 
 export default function () {
+  const getStreamClient = (userToken: string) => {
+    if (process.env.NEXT_PUBLIC_STREAM_API_KEY) return connect(process.env.NEXT_PUBLIC_STREAM_API_KEY, userToken, process.env.NEXT_PUBLIC_STREAM_APP_ID)
+  }
   useEffect(() => {
     fetch('/api/token?name=chris')
       .then((res) => res.json())
       .then((res) => {
         if (res.userToken) {
-          if (process.env.NEXT_PUBLIC_STREAM_API_KEY) {
-            const client = connect(process.env.NEXT_PUBLIC_STREAM_API_KEY, res.userToken, process.env.NEXT_PUBLIC_STREAM_APP_ID)
+          const client = getStreamClient(res.userToken)
+          if (client) {
             client
               .user('chris')
               .getOrCreate({
@@ -33,15 +36,17 @@ export default function () {
                       .then((res_) => res_.json())
                       .then((res_) => {
                         if (process.env.NEXT_PUBLIC_STREAM_API_KEY) {
-                          const client_ = connect(process.env.NEXT_PUBLIC_STREAM_API_KEY, res_.userToken, process.env.NEXT_PUBLIC_STREAM_APP_ID)
-                          client_
-                            .user('jack')
-                            .getOrCreate({ name: 'Jack' })
-                            .then((jackUser) => {
-                              const jack = client_.feed('user', jackUser.id)
-                              jack.follow('user', `user:${chrisUser.id}`)
-                              jack.get({ limit: 10 })
-                            })
+                          const client_ = getStreamClient(res_.userToken)
+                          if (client_) {
+                            client_
+                              .user('jack')
+                              .getOrCreate({ name: 'Jack' })
+                              .then((jackUser) => {
+                                const jack = client_.feed('user', jackUser.id)
+                                jack.follow('user', `user:${chrisUser.id}`)
+                                jack.get({ limit: 10 })
+                              })
+                          }
                         }
                       })
                   })
