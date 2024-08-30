@@ -22,28 +22,21 @@ export default function () {
     }
   }
   useEffect(() => {
-    fetch(`/api/token?name=${user1.handle}`)
-      .then((user1Res) => user1Res.json())
-      .then((user1Res) => {
-        if (user1Res.userToken) {
-          const user1Client = getStreamClient(user1Res.userToken)
-          if (user1Client) {
-            setUser1({ ...user1, client: user1Client })
-            user1Client.user(user1.handle).getOrCreate({ name: user1.name, photo: user1.photo })
+    const users = [user1, user2]
+    users.forEach((i, idx) => {
+      fetch(`/api/token?name=${i.handle}`)
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.userToken) {
+            const userClient = getStreamClient(res.userToken)
+            if (userClient) {
+              if (idx === 0) setUser1({ ...user1, client: userClient })
+              else setUser2({ ...user2, client: userClient })
+              userClient.user(i.handle).getOrCreate({ name: i.name, photo: i.photo })
+            }
           }
-        }
-      })
-    fetch(`/api/token?name=${user2.handle}`)
-      .then((user2Res) => user2Res.json())
-      .then((user2Res) => {
-        if (user2Res.userToken) {
-          const user2Client = getStreamClient(user2Res.userToken)
-          if (user2Client) {
-            setUser2({ ...user2, client: user2Client })
-            user2Client.user(user2.handle).getOrCreate({ name: user2.name, photo: user2.photo })
-          }
-        }
-      })
+        })
+    })
   }, [])
   return (
     <div className="flex flex-col gap-y-8 md:flex-row md:gap-x-8 md:gap-y-0">
