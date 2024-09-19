@@ -1,4 +1,4 @@
-![](https://stream-blog-v2.imgix.net/blog/wp-content/uploads/e0d14cf5dea9d93429e0f23390997e6c/Blog-BuildnextjsChat-2000x840px-scaled.jpg?auto=compress%2Cformat&amp;amp;fit=scale&amp;amp;h=126&amp;amp;ixlib=php-3.3.0&amp;amp;w=300&amp;amp;wpsize=medium)
+![](https://stream-blog-v2.imgix.net/blog/wp-content/uploads/95687da4d43974949173f1df4ede0d6c/Twitter-BuildInAppNotifications-NextJS-1600x900px.jpg?auto=format&auto=compress&w=1600&fit=max)
 
 # Using Stream to Build a In-App Notifications in Next.js
 
